@@ -1,13 +1,11 @@
-const CACHE_NAME = 'ashi-elbow-complete-v1';
+const CACHE_NAME = 'ashi-elbow-complete-v2';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './icon-180.png',
   './icon-192.png',
-  './icon-512.png',
-  './icon-1024.png',
-  './splash-1170x2532.png'
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {

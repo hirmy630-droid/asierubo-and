@@ -214,7 +214,7 @@
         /* テンキー */
         .keypad-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 1px;
             background: var(--ios-border);
             margin: 0 12px 12px;
@@ -226,7 +226,7 @@
         .key-btn {
             background: #1c1c1e;
             color: white;
-            height: 68px;
+            height: 58px;
             font-size: 24px;
             display: flex;
             align-items: center;
@@ -236,6 +236,23 @@
         .key-btn:active { background: #333; }
         .key-btn.orange { background: var(--ios-orange); font-weight: 700; }
         .key-btn.gray { background: #2c2c2e; color: var(--label-gray); font-size: 18px; font-weight: 600; }
+        .key-btn.clear-light { background: #4a4a4e; color: #f2f2f7; font-size: 18px; font-weight: 700; }
+        .action-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
+            margin: 0 12px 12px;
+        }
+        .action-btn {
+            border: none;
+            border-radius: 14px;
+            height: 56px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .action-btn.save { background: var(--ios-orange); }
+        .action-btn.ac { background: #3a3a3c; color: #f2f2f7; }
 
         /* 履歴 */
         .history-area { padding: 12px; background: #000; }
@@ -273,7 +290,6 @@
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-<link rel="apple-touch-startup-image" href="splash-1170x2532.png">
 <meta name="format-detection" content="telephone=no">
 <style>
 #installBtn{
@@ -363,21 +379,23 @@ if ('serviceWorker' in navigator) {
                 <button class="key-btn" onclick="pressKey('7')">7</button>
                 <button class="key-btn" onclick="pressKey('8')">8</button>
                 <button class="key-btn" onclick="pressKey('9')">9</button>
-                <button class="key-btn gray" onclick="pressKey('backspace')">C</button>
-                
+
                 <button class="key-btn" onclick="pressKey('4')">4</button>
                 <button class="key-btn" onclick="pressKey('5')">5</button>
                 <button class="key-btn" onclick="pressKey('6')">6</button>
-                <button class="key-btn gray" onclick="pressKey('clear')">AC</button>
-                
+
                 <button class="key-btn" onclick="pressKey('1')">1</button>
                 <button class="key-btn" onclick="pressKey('2')">2</button>
                 <button class="key-btn" onclick="pressKey('3')">3</button>
-                <button class="key-btn orange row-span-2 h-full" id="enter-btn-label" onclick="pressKey('enter')">保存</button>
-                
+
                 <button class="key-btn" onclick="pressKey('0')">0</button>
                 <button class="key-btn" onclick="pressKey('00')">00</button>
-                <button class="key-btn" onclick="pressKey('.')">.</button>
+                <button class="key-btn clear-light" onclick="pressKey('clear')">クリア</button>
+            </div>
+
+            <div class="action-row">
+                <button class="action-btn save" id="enter-btn-label" onclick="pressKey('enter')">保存</button>
+                <button class="action-btn ac" onclick="pressKey('allclear')">AC</button>
             </div>
 
             <!-- 履歴 -->
@@ -427,14 +445,21 @@ if ('serviceWorker' in navigator) {
         isOverwriteMode = true;
 
         const enterLabel = document.getElementById('enter-btn-label');
-        enterLabel.innerText = (focusedInputId.startsWith('leg-input')) ? '⏎' : '保存';
+        enterLabel.innerText = '保存';
     }
 
     function pressKey(key) {
         let val = inputs[focusedInputId] || '';
         
-        if (key === 'clear' || key === 'backspace') {
-            // AC または C キー: 現在の入力枠をクリア
+        if (key === 'allclear') {
+            inputs[`leg-input-${currentTab}`] = '';
+            inputs[`main-input-${currentTab}`] = '';
+            updateDisplay('leg-input', '');
+            updateDisplay('main-input', '');
+            isOverwriteMode = true;
+            elbowCalc();
+            return;
+        } else if (key === 'clear' || key === 'backspace') {
             val = '';
             isOverwriteMode = true;
         } else if (key === 'enter') {
